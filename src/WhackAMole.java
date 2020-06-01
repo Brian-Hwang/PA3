@@ -29,61 +29,23 @@ public class WhackAMole extends Observable {
 		molCol = rnd.nextInt(bcol);
 
 	}
-
-	/**
-	 * Get the number of rows on the board.
-	 * 
-	 * @return the number of rows.
-	 */
+	
 	public int getRows() {
 		return brow;
 	}
-
-	/**
-	 * Get the number of columns on the board.
-	 * 
-	 * @return the number of columns.
-	 */
 	public int getCols() {
 		return bcol;
 	}
-
-	/**
-	 * Get the row containing the mole.
-	 * 
-	 * @return the row containing the mole.
-	 */
 	public int getMoleRow() {
 		return molRow;
 	}
-
-	/**
-	 * Get the column containing the mole.
-	 * 
-	 * @return the column containing the mole.
-	 */
 	public int getMoleCol() {
 		return molCol;
 	}
-
-	/**
-	 * Get the current score.
-	 * 
-	 * @return the score.
-	 */
 	public int getScore() {
 		return score;
 	}
 
-	/**
-	 * Whack the hole at the specified row and column. When a hole is whacked the
-	 * score is increased if there was a mole at that location and decreased if
-	 * there was not. Either way the location of the mole is changed and any
-	 * observers are notified of the change.
-	 * 
-	 * @param row the row to whack
-	 * @param col the column to whack
-	 */
 	public void whack(int row, int col) {
 		if (col == molCol && row == molRow) {
 			score = score + 10;
@@ -112,11 +74,7 @@ class WhackAMoleGUI extends JFrame implements Observer {
 	private ImageIcon hole, mole;
 	private JLabel l1;
 
-	/**
-	 * Construct a new WhackAMoleGUI for the specified model.
-	 * 
-	 * @param myModel the model for this GUI.
-	 */
+
 	public WhackAMoleGUI(WhackAMole myModel) {
 		super("Whack A Mol");
 		this.myModel = myModel;
@@ -141,18 +99,11 @@ class WhackAMoleGUI extends JFrame implements Observer {
 			}
 		}
 	}
-	/**
-	 * returns a JLabel with a score.
-	 */
 	
 	public JLabel score() {
 		l1 = new JLabel("Score: " + myModel.getScore() );
 		return l1;
 	}
-	
-	/**
-	 * returns a JPanel with a 4x4 board full of buttons.
-	 */
 
 	public JPanel getJPanel(int row) {
 		JPanel rowPanel = new JPanel();
@@ -166,10 +117,6 @@ class WhackAMoleGUI extends JFrame implements Observer {
 		}
 		return rowPanel;
 	}
-	
-	/**
-	 * An inner class that defines an ActionListener for the buttons.
-	 */
 
 	private class ButtonListener implements ActionListener {
 		private int row;
@@ -200,12 +147,6 @@ class WhackAMoleGUI extends JFrame implements Observer {
 	}
 
 	
-	
-	/**
-	 * Run the WhackAMole game.
-	 * 
-	 * @param args none
-	 */
 	public static void main(String[] args) {
 		WhackAMole wamm = new WhackAMole();
 		WhackAMoleGUI gui = new WhackAMoleGUI(wamm);
