@@ -232,7 +232,7 @@ class WhackAMoleGUI extends JFrame implements Observer {
         
         JLabel imgLbl = new JLabel();      
         // ★ 라벨에 넣을 아이콘 생성
-        ImageIcon bsImg = new ImageIcon(WhackAMole.class.getResource("icons/Mole6.png"));      
+        ImageIcon bsImg = new ImageIcon(WhackAMole.class.getResource("icons/Mole7.png"));      
         // ★ 라벨에 아이콘 설정
         imgLbl.setIcon(bsImg);       
         // ★ 기타 설정
@@ -284,6 +284,7 @@ class WhackAMoleGUI extends JFrame implements Observer {
     		WhackAMoleGUI gui = new WhackAMoleGUI(wamm);
     		gui.setVisible(true);
         });
+        System.out.println("hello");
 	}
 }
 
