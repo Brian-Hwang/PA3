@@ -1,5 +1,6 @@
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.reflect.Array;
@@ -8,7 +9,6 @@ import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.JTextComponent;
 import java.awt.Font;
-import java.util.Enumeration;
 
 public class WhackAMole extends Observable {
 	
@@ -82,7 +82,7 @@ class WhackAMoleGUI extends JFrame implements Observer {
 	private JButton[][] board;
 	private WhackAMole myModel;
 	private ImageIcon moleunscaled, holeunscaled, hole, mole;
-	private JLabel l1;	
+	private JLabel l1,timer;	
 
 	public WhackAMoleGUI(WhackAMole myModel) {
 		super("Whack A Mol");
@@ -93,7 +93,22 @@ class WhackAMoleGUI extends JFrame implements Observer {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		this.add(mainPanel);
+		timer= new JLabel();
+		timer.setBounds(100, 100, 200, 30);
+		Timer time = new Timer();
+		mainPanel.add(timer);
 		mainPanel.add(score());
+		time.scheduleAtFixedRate(new TimerTask() {
+			int i= 30;
+			@Override
+			public void run() {
+				timer.setText("Timer: "+(i--));
+				if(i<0) {
+					time.cancel();// end game!
+				}
+			}
+			
+		}, 0, 1000);
 		moleunscaled = new ImageIcon(WhackAMoleGUI.class.getResource("icons/Moleup.png"));
 		holeunscaled = new ImageIcon(WhackAMoleGUI.class.getResource("icons/Moledown.png"));
 		mole=new ImageIcon(moleunscaled.getImage().getScaledInstance(moleunscaled.getIconHeight()/5,moleunscaled.getIconHeight()/5,Image.SCALE_SMOOTH));
