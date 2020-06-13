@@ -18,19 +18,23 @@ public class WhackAMole extends Observable {
 	private int molCol;
 	private static Random rnd;
 	private int score;
-	
-	/**
-	 * Construct a new 4x4 Whack-a-Mole board. The mole is initially at a randomly
-	 * selected location. The score is initially 0.
-	 */
+	private boolean isnorm;
+	private double timing;
+
 	public WhackAMole() {
-		brow = 4;
-		bcol = 4;		
 		score = 0;
+	}
+	
+	void setLevel(int level){
+		brow = 3+level;
+		bcol = 3+level;
+		timing=level*0.1;
 		rnd = new Random();
 		molRow = rnd.nextInt(brow);
 		molCol = rnd.nextInt(bcol);
-
+	}
+	void setMode(boolean isnorm) {
+		this.isnorm=isnorm;
 	}
 	
 	public int getRows() {
@@ -47,6 +51,9 @@ public class WhackAMole extends Observable {
 	}
 	public int getScore() {
 		return score;
+	}
+	public double getTiming() {
+		return timing;
 	}
 
 	public void whack(int row, int col) {
@@ -74,7 +81,7 @@ class WhackAMoleGUI extends JFrame implements Observer {
 
 	private JButton[][] board;
 	private WhackAMole myModel;
-	private ImageIcon hole, mole;
+	private ImageIcon moleunscaled, holeunscaled, hole, mole;
 	private JLabel l1;	
 
 	public WhackAMoleGUI(WhackAMole myModel) {
@@ -87,8 +94,10 @@ class WhackAMoleGUI extends JFrame implements Observer {
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		this.add(mainPanel);
 		mainPanel.add(score());
-		mole = new ImageIcon(WhackAMoleGUI.class.getResource("icons/gopher.jpg"));
-		hole = new ImageIcon(WhackAMoleGUI.class.getResource("icons/hole.jpg"));
+		moleunscaled = new ImageIcon(WhackAMoleGUI.class.getResource("icons/Moleup.png"));
+		holeunscaled = new ImageIcon(WhackAMoleGUI.class.getResource("icons/Moledown.png"));
+		mole=new ImageIcon(moleunscaled.getImage().getScaledInstance(moleunscaled.getIconHeight()/5,moleunscaled.getIconHeight()/5,Image.SCALE_SMOOTH));
+		hole=new ImageIcon(holeunscaled.getImage().getScaledInstance(moleunscaled.getIconHeight()/5,moleunscaled.getIconHeight()/5,Image.SCALE_SMOOTH));
 		for (int i = 0; i < myModel.getRows(); i++) {
 			mainPanel.add(getJPanel(i));
 		}
@@ -115,6 +124,8 @@ class WhackAMoleGUI extends JFrame implements Observer {
 		for (int i = 0; i < myModel.getCols(); i++) {
 
 			JButton button = new JButton(hole);
+			button.setBackground(new Color(255, 214, 66));
+			button.setOpaque(true);
 			rowPanel.add(button);
 			board[row][i] = button;
 		}
@@ -136,11 +147,6 @@ class WhackAMoleGUI extends JFrame implements Observer {
 		}
 	}
 
-	/**
-	 * Update the GUI to reflect the state of the model. This method repaints all of
-	 * the buttons with a hole and then repaints the button with the mole on it.
-	 */
-
 	@Override
 	public void update(Observable o, Object arg) {
 		l1.setText("Score: " + myModel.getScore());
@@ -159,6 +165,9 @@ class WhackAMoleGUI extends JFrame implements Observer {
             if (value instanceof FontUIResource)
                 UIManager.put(key, new FontUIResource("본고딕", Font.BOLD, 15));
         }
+    	WhackAMole wamm = new WhackAMole();
+		
+		
         Font font1 = new Font("본고딕", Font.BOLD, 13) ;       
     
         String lvTemp;
@@ -250,6 +259,7 @@ class WhackAMoleGUI extends JFrame implements Observer {
             btn3.setVisible(false);
             btn4.setVisible(true);
             btn5.setVisible(true);
+            wamm.setLevel(1);
                          
         });       
         btn2.addActionListener(event -> {
@@ -259,7 +269,7 @@ class WhackAMoleGUI extends JFrame implements Observer {
             btn3.setVisible(false);
             btn4.setVisible(true);
             btn5.setVisible(true);
-            
+            wamm.setLevel(2);
         });
         btn3.addActionListener(event -> {
         	lbl.setText("Select Mode");
@@ -268,23 +278,21 @@ class WhackAMoleGUI extends JFrame implements Observer {
             btn3.setVisible(false);          
             btn4.setVisible(true);
             btn5.setVisible(true);
+            wamm.setLevel(3);
            
         });
         // 프레임이 보이도록 설정
         frm.setVisible(true);
         btn4.addActionListener(event -> {
-        	frm.setVisible(false);       	
-        	WhackAMole wamm = new WhackAMole();
-    		WhackAMoleGUI gui = new WhackAMoleGUI(wamm);
+        	frm.setVisible(false);
+        	WhackAMoleGUI gui = new WhackAMoleGUI(wamm);
     		gui.setVisible(true);
         });
         btn5.addActionListener(event -> {
-        	frm.setVisible(false);      
-        	WhackAMole wamm = new WhackAMole();
-    		WhackAMoleGUI gui = new WhackAMoleGUI(wamm);
+        	frm.setVisible(false);
+        	WhackAMoleGUI gui = new WhackAMoleGUI(wamm);
     		gui.setVisible(true);
         });
-        System.out.println("hello");
 	}
 }
 
