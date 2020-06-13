@@ -28,7 +28,7 @@ public class WhackAMole extends Observable {
 	void setLevel(int level){
 		brow = 3+level;
 		bcol = 3+level;
-		timing=level*0.1;
+		timing=((double)0.5)+((double)1)/level;
 		rnd = new Random();
 		molRow = rnd.nextInt(brow);
 		molCol = rnd.nextInt(bcol);
@@ -52,32 +52,34 @@ public class WhackAMole extends Observable {
 	public int getScore() {
 		return score;
 	}
-	public double getTiming() {
-		return timing;
+	public int getTiming() {
+		return   (int) (10*timing);
 	}
-
+	public boolean getMode(){
+		return isnorm;
+	}
+	public void changemole() {
+		molRow = rnd.nextInt(brow);
+		molCol = rnd.nextInt(bcol);
+	}
 	public void whack(int row, int col) {
 		if (col == molCol && row == molRow) {
 			score = score + 10;
 		} else {
 			score = score - 5;
+			//if(!isnorm)
+				///////////////////////엔딩화면////////////////
 		}
-		molRow = rnd.nextInt(brow);
-		molCol = rnd.nextInt(bcol);
-		setChanged();
-		notifyObservers();
 	}
 	
 	public void setMol(int molRow, int molCol) {
 		this.molRow = molRow;
 		this.molCol = molCol;
 	}
-	
-	
 }
 
 
-class WhackAMoleGUI extends JFrame implements Observer {
+class WhackAMoleGUI extends JFrame {
 
 	private JButton[][] board;
 	private WhackAMole myModel;
@@ -93,22 +95,24 @@ class WhackAMoleGUI extends JFrame implements Observer {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		this.add(mainPanel);
-		timer= new JLabel();
-		timer.setBounds(100, 100, 200, 30);
-		Timer time = new Timer();
-		mainPanel.add(timer);
-		mainPanel.add(score());
-		time.scheduleAtFixedRate(new TimerTask() {
-			int i= 30;
-			@Override
-			public void run() {
-				timer.setText("Timer: "+(i--));
-				if(i<0) {
-					time.cancel();// end game!
+		if(myModel.getMode()) {
+			timer= new JLabel();
+			timer.setBounds(100, 100, 200, 30);
+			Timer time = new Timer();
+			mainPanel.add(timer);
+			time.scheduleAtFixedRate(new TimerTask() { //timer in game screen
+				int i= 30;
+				@Override
+				public void run() {
+					timer.setText("Timer: "+(i--));
+					if(i<0) {
+						time.cancel();// end game!
+						///////////////////////엔딩화면////////////////
+					}
 				}
-			}
-			
-		}, 0, 1000);
+			}, 0, 1000);
+		}
+		mainPanel.add(score());
 		moleunscaled = new ImageIcon(WhackAMoleGUI.class.getResource("icons/Moleup.png"));
 		holeunscaled = new ImageIcon(WhackAMoleGUI.class.getResource("icons/Moledown.png"));
 		mole=new ImageIcon(moleunscaled.getImage().getScaledInstance(moleunscaled.getIconHeight()/5,moleunscaled.getIconHeight()/5,Image.SCALE_SMOOTH));
@@ -117,7 +121,6 @@ class WhackAMoleGUI extends JFrame implements Observer {
 			mainPanel.add(getJPanel(i));
 		}
 		board[myModel.getMoleRow()][myModel.getMoleCol()].setIcon(mole);
-		myModel.addObserver(this);
 		
 		this.pack();
 		for(int row = 0; row <myModel.getRows(); row++){
@@ -125,6 +128,16 @@ class WhackAMoleGUI extends JFrame implements Observer {
 				board[row][col].addActionListener(new ButtonListener(row, col));
 			}
 		}
+		
+		Timer change = new Timer();
+		change.scheduleAtFixedRate(new TimerTask() { //change place of mole according to level
+			@Override
+			public void run() {
+				board[myModel.getMoleRow()][myModel.getMoleCol()].setIcon(hole);
+				myModel.changemole();
+				board[myModel.getMoleRow()][myModel.getMoleCol()].setIcon(mole);
+			}
+		}, 0, 100*myModel.getTiming());
 	}
 	
 	public JLabel score() {
@@ -159,16 +172,10 @@ class WhackAMoleGUI extends JFrame implements Observer {
 		public void actionPerformed(ActionEvent e) {
 			board[myModel.getMoleRow()][myModel.getMoleCol()].setIcon(hole);
 			myModel.whack(row, col);
+			l1.setText("Score: " + myModel.getScore());
 		}
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		l1.setText("Score: " + myModel.getScore());
-		board[myModel.getMoleRow()][myModel.getMoleCol()].setIcon(mole);
-
-		
-	}
 
 	
 	public static void main(String[] args) {
@@ -300,11 +307,13 @@ class WhackAMoleGUI extends JFrame implements Observer {
         frm.setVisible(true);
         btn4.addActionListener(event -> {
         	frm.setVisible(false);
+        	wamm.setMode(true);
         	WhackAMoleGUI gui = new WhackAMoleGUI(wamm);
     		gui.setVisible(true);
         });
         btn5.addActionListener(event -> {
         	frm.setVisible(false);
+        	wamm.setMode(false);
         	WhackAMoleGUI gui = new WhackAMoleGUI(wamm);
     		gui.setVisible(true);
         });
