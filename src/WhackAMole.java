@@ -20,6 +20,8 @@ public class WhackAMole extends Observable {
 	private int score;
 	private boolean isnorm;
 	private double timing;
+	private int endGame;
+	
 
 	public WhackAMole() {
 		score = 0;
@@ -52,6 +54,9 @@ public class WhackAMole extends Observable {
 	public int getScore() {
 		return score;
 	}
+	public int getEnd() {
+		return endGame;
+	}
 	public int getTiming() {
 		return   (int) (10*timing);
 	}
@@ -67,7 +72,9 @@ public class WhackAMole extends Observable {
 			score = score + 10;
 		} else {
 			score = score - 5;
-			//if(!isnorm)
+			if(!isnorm) {
+				endGame = 1;
+			}
 				///////////////////////엔딩화면////////////////
 		}
 	}
@@ -84,7 +91,9 @@ class WhackAMoleGUI extends JFrame {
 	private JButton[][] board;
 	private WhackAMole myModel;
 	private ImageIcon moleunscaled, holeunscaled, hole, mole;
-	private JLabel l1,timer;	
+	private JLabel l1,timer;
+	public int endGame;
+	
 
 	public WhackAMoleGUI(WhackAMole myModel) {
 		super("Whack A Mol");
@@ -95,6 +104,7 @@ class WhackAMoleGUI extends JFrame {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		this.add(mainPanel);
+		
 		if(myModel.getMode()) {
 			timer= new JLabel();
 			timer.setBounds(100, 100, 200, 30);
@@ -104,14 +114,48 @@ class WhackAMoleGUI extends JFrame {
 				int i= 30;
 				@Override
 				public void run() {
+					
 					timer.setText("Timer: "+(i--));
-					if(i<0) {
-						time.cancel();// end game!
-						///////////////////////엔딩화면////////////////
+					if(i<0) {						
+						mainPanel.setVisible(false);
+						
+						JFrame frm = new JFrame("Whack A Mole ");
+						
+						Font font1 = new Font("본고딕", Font.BOLD, 20);
+						Font font2 = new Font("본고딕", Font.BOLD, 15);  
+						
+						frm.getContentPane().setBackground(Color.ORANGE);				       
+				        frm.setSize(500, 500);				 				       
+				        frm.setLocationRelativeTo(null);				        				       
+				        frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);				        
+				        frm.getContentPane().setLayout(null);
+				        
+						JLabel lbl = new JLabel();
+				        lbl.setBounds(150, 160, 200, 30);
+				        lbl.setText("Game Over");
+				        lbl.setHorizontalAlignment(JLabel.CENTER);
+				        lbl.setFont(font1);
+				        frm.getContentPane().add(lbl);
+				        
+				        JLabel lbl2 = new JLabel();
+				        lbl2.setBounds(150, 260, 200, 30);
+				        lbl2.setText("Your Score: "+myModel.getScore());
+				        lbl2.setHorizontalAlignment(JLabel.CENTER);
+				        lbl2.setFont(font2);
+				       
+				        frm.getContentPane().add(lbl2);
+				       			        
+				        frm.setVisible(true);
+						time.cancel();
+						//  Classic Mode 엔딩화면
 					}
 				}
 			}, 0, 1000);
 		}
+		else {
+			
+		}
+		
 		mainPanel.add(score());
 		moleunscaled = new ImageIcon(WhackAMoleGUI.class.getResource("icons/Moleup.png"));
 		holeunscaled = new ImageIcon(WhackAMoleGUI.class.getResource("icons/Moledown.png"));
@@ -133,6 +177,39 @@ class WhackAMoleGUI extends JFrame {
 		change.scheduleAtFixedRate(new TimerTask() { //change place of mole according to level
 			@Override
 			public void run() {
+				if(myModel.getEnd() == 1) {
+					mainPanel.setVisible(false);
+					
+					JFrame frm = new JFrame("Whack A Mole ");
+					
+					Font font1 = new Font("본고딕", Font.BOLD, 20);
+					Font font2 = new Font("본고딕", Font.BOLD, 15);  
+					
+					frm.getContentPane().setBackground(Color.ORANGE);				       
+			        frm.setSize(500, 500);				 				       
+			        frm.setLocationRelativeTo(null);				        				       
+			        frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);				        
+			        frm.getContentPane().setLayout(null);
+			        
+					JLabel lbl = new JLabel();
+			        lbl.setBounds(150, 160, 200, 30);
+			        lbl.setText("Game Over");
+			        lbl.setHorizontalAlignment(JLabel.CENTER);
+			        lbl.setFont(font1);
+			        frm.getContentPane().add(lbl);
+			        
+			        JLabel lbl2 = new JLabel();
+			        lbl2.setBounds(150, 260, 200, 30);
+			        lbl2.setText("Your Score: "+myModel.getScore());
+			        lbl2.setHorizontalAlignment(JLabel.CENTER);
+			        lbl2.setFont(font2);
+			       
+			        frm.getContentPane().add(lbl2);
+			       			        
+			        frm.setVisible(true);
+					change.cancel();
+					//  Challenge Mode 엔딩화면
+				}
 				board[myModel.getMoleRow()][myModel.getMoleCol()].setIcon(hole);
 				myModel.changemole();
 				board[myModel.getMoleRow()][myModel.getMoleCol()].setIcon(mole);
@@ -191,10 +268,7 @@ class WhackAMoleGUI extends JFrame {
 		
 		
         Font font1 = new Font("본고딕", Font.BOLD, 13) ;       
-    
-        String lvTemp;
-        String mdTemp;
-		
+        		
 		JFrame frm = new JFrame("Whack A Mole");
 		 
 		frm.getContentPane().setBackground(Color.ORANGE);
@@ -309,14 +383,17 @@ class WhackAMoleGUI extends JFrame {
         	frm.setVisible(false);
         	wamm.setMode(true);
         	WhackAMoleGUI gui = new WhackAMoleGUI(wamm);
-    		gui.setVisible(true);
+    		gui.setVisible(true);   		
         });
         btn5.addActionListener(event -> {
         	frm.setVisible(false);
         	wamm.setMode(false);
         	WhackAMoleGUI gui = new WhackAMoleGUI(wamm);
-    		gui.setVisible(true);
+    		gui.setVisible(true);   		
         });
+        
+        
+        	
 	}
 }
 
