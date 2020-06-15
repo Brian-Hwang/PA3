@@ -96,7 +96,8 @@ class WhackAMoleGUI extends JFrame {
 	
 
 	public WhackAMoleGUI(WhackAMole myModel) {
-		super("Whack A Mol");
+		super("Whack A Mole");
+		
 		this.myModel = myModel;
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
@@ -116,8 +117,9 @@ class WhackAMoleGUI extends JFrame {
 				public void run() {
 					
 					timer.setText("Timer: "+(i--));
-					if(i<0) {						
-						mainPanel.setVisible(false);
+					if(i<0) {
+						setVisible(false);
+						
 						
 						JFrame frm = new JFrame("Whack A Mole ");
 						
@@ -178,7 +180,7 @@ class WhackAMoleGUI extends JFrame {
 			@Override
 			public void run() {
 				if(myModel.getEnd() == 1) {
-					mainPanel.setVisible(false);
+					setVisible(false);
 					
 					JFrame frm = new JFrame("Whack A Mole ");
 					
